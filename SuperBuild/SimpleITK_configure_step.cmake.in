@@ -1,0 +1,36 @@
+message("Configuring SimpleITK:\n@SimpleITK_DIR@")
+set(ENV{LD_LIBRARY_PATH} "@CMAKE_CURRENT_BINARY_DIR@/python-build/lib")
+set(ENV{DYLD_LIBRARY_PATH} "@CMAKE_CURRENT_BINARY_DIR@/python-build/lib")
+
+
+set(output_file "@SimpleITK_DIR@/configure_step_output.txt")
+set(error_file "@SimpleITK_DIR@/configure_step_error.txt")
+
+execute_process(
+  COMMAND "@CMAKE_COMMAND@"
+    @ep_common_compiler_args@
+    @CMAKE_OSX_EXTERNAL_PROJECT_ARGS@
+    # Keep the internal SimpleITK libraries as static, only produce
+    # one shared python library
+    -DBUILD_SHARED_LIBS:BOOL=OFF
+    -DCMAKE_BUILD_TYPE:STRING=Release
+    "-DCMAKE_INSTALL_PREFIX:PATH=@CMAKE_CURRENT_BINARY_DIR@"
+    "-DITK_DIR:PATH=@ITK_DIR@"
+    -DBUILD_EXAMPLES:BOOL=OFF
+    -DBUILD_TESTING:BOOL=OFF
+    -DBUILD_DOXYGEN:BOOL=OFF
+    -DWRAP_PYTHON:BOOL=ON
+    -DWRAP_TCL:BOOL=OFF
+    -DWRAP_JAVA:BOOL=OFF
+    -DWRAP_RUBY:BOOL=OFF
+    -DWRAP_LUA:BOOL=OFF
+    -DWRAP_CSHARP:BOOL=OFF
+    -DWRAP_R:BOOL=OFF
+    @SIMPLEITK_PYTHON_ARGS@
+    "-DSWIG_EXECUTABLE:PATH=@SWIG_EXECUTABLE@"
+    "@CMAKE_CURRENT_BINARY_DIR@/SimpleITK"
+  WORKING_DIRECTORY "@SimpleITK_DIR@"
+  RESULT_VARIABLE res
+  OUTPUT_FILE ${output_file}
+  ERROR_FILE ${error_file}
+  )

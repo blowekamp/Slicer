@@ -3,9 +3,6 @@ set(ENV{LD_LIBRARY_PATH} "@CMAKE_CURRENT_BINARY_DIR@/python-build/lib")
 set(ENV{DYLD_LIBRARY_PATH} "@CMAKE_CURRENT_BINARY_DIR@/python-build/lib")
 set(ENV{VS_UNICODE_OUTPUT} "")
 
-## This is finding the wrong path on linux that has python 2.6 installed
-#COMMAND @Slicer_LAUNCHER_EXECUTABLE@ -c "from distutils.sysconfig import get_python_lib; python_pkg_path=get_python_lib(); f=open('@CMAKE_BINARY_DIR@/python_pkg_path.txt','w'); f.write(python_pkg_path); f.close()"
-
 execute_process(
   COMMAND "@slicer_PYTHON_EXECUTABLE@" -c "from distutils.sysconfig import get_python_lib; python_pkg_path=get_python_lib(); f=open('@CMAKE_BINARY_DIR@/python_pkg_path.txt','w'); f.write(python_pkg_path); f.close()"
   OUTPUT_VARIABLE PYTHON_SITE_PACKAGES_DIR_SlicerOUTPUT

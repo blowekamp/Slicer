@@ -37,45 +37,38 @@ else()
     )
 endif()
 
-configure_file(SuperBuild/SimpleITK_install_step.cmake.in
-  ${CMAKE_CURRENT_BINARY_DIR}/SimpleITK_install_step.cmake
-  @ONLY)
+# Set CMake OSX variable to pass down the external project
+set(CMAKE_OSX_EXTERNAL_PROJECT_ARGS)
+if(APPLE)
+  list(APPEND CMAKE_OSX_EXTERNAL_PROJECT_ARGS
+    -DCMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
+    -DCMAKE_OSX_SYSROOT=${CMAKE_OSX_SYSROOT}
+    -DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET})
+endif()
 
+set(SimpleITK_CONFIGURE_COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/SimpleITK_configure_step.cmake)
 set(SimpleITK_INSTALL_COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/SimpleITK_install_step.cmake)
 
 
 ExternalProject_add(SimpleITK
   SOURCE_DIR SimpleITK
   BINARY_DIR SimpleITK-build
-  #GIT_REPOSITORY http://itk.org/SimpleITK.git
-  GIT_REPOSITORY ${git_protocol}://github.com/hjmjohnson/SimpleITK.git
+  GIT_REPOSITORY ${git_protocol}://itk.org/SimpleITK.git
 
-  # This is the tag for the "next" branch as of March 6th, 2012 to address ITKv4.1.0
-  ## Tag of next branch on 2012-03-15
-  GIT_TAG 62bddb1def60cbbf87cfcff9a37ed02b4ca8a3ce
+  # Tag of release branch on 2012-03-31
+  GIT_TAG f41a2a3a7cb87df08448c6ec25bccdd3842de561
   UPDATE_COMMAND ""
-  CMAKE_ARGS
-  ${ep_common_compiler_args}
-  # SimpleITK does not work with shared libs turned on
-  -DBUILD_SHARED_LIBS:BOOL=OFF
-  -DCMAKE_BUILD_TYPE:STRING=Release
-  -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_CURRENT_BINARY_DIR}
-  -DITK_DIR:PATH=${ITK_DIR}
-  -DBUILD_EXAMPLES:BOOL=OFF
-  -DBUILD_TESTING:BOOL=OFF
-  -DBUILD_DOXYGEN:BOOL=OFF
-  -DWRAP_PYTHON:BOOL=ON
-  -DWRAP_TCL:BOOL=OFF
-  -DWRAP_JAVA:BOOL=OFF
-  -DWRAP_RUBY:BOOL=OFF
-  -DWRAP_LUA:BOOL=OFF
-  -DWRAP_CSHARP:BOOL=OFF
-  -DWRAP_R:BOOL=OFF
-  ${SIMPLEITK_PYTHON_ARGS}
-  -DSWIG_EXECUTABLE:PATH=${SWIG_EXECUTABLE}
-  #
+  CONFIGURE_COMMAND ${SimpleITK_CONFIGURE_COMMAND}
   INSTALL_COMMAND ${SimpleITK_INSTALL_COMMAND}
-  #
   DEPENDS ${SimpleITK_DEPENDENCIES}
 )
 
+set(SimpleITK_DIR "${CMAKE_BINARY_DIR}/SimpleITK-build")
+
+
+configure_file(SuperBuild/SimpleITK_install_step.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/SimpleITK_install_step.cmake
+  @ONLY)
+configure_file(SuperBuild/SimpleITK_configure_step.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/SimpleITK_configure_step.cmake
+  @ONLY)
