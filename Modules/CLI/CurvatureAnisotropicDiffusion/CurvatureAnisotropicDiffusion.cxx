@@ -22,6 +22,8 @@
 #include "itkPluginUtilities.h"
 #include "CurvatureAnisotropicDiffusionCLP.h"
 
+#include <algorithm>
+
 // Use an anonymous namespace to keep class types and function names
 // from colliding when module is used as shared object module.  Every
 // thing should be in an anonymous namespace except for the module
@@ -42,6 +44,9 @@ int DoIt( int argc, char * argv[], T )
   typedef itk::Image<InputPixelType,  3> InputImageType;
   typedef itk::Image<OutputPixelType, 3> OutputImageType;
 
+  typedef InputImageType::SpacingType SpacingType;
+  typedef SpacingType::ValueType SpacingValueType;
+
   typedef itk::ImageFileReader<InputImageType>  ReaderType;
   typedef itk::ImageFileWriter<OutputImageType> WriterType;
 
@@ -55,6 +60,11 @@ int DoIt( int argc, char * argv[], T )
 
   reader->SetFileName( inputVolume.c_str() );
 
+  reader->GenerateOutputInformation();
+
+  SpacingType spacing = reader->GetOutput()->GetSpacing();
+  SpacingValueType minSpacing =  *std::min_element( spacing.Begin(), spacing.End() );
+
   typename FilterType::Pointer filter = FilterType::New();
   itk::PluginFilterWatcher watchFilter(filter,
                                        "Curvature Anisotropic Diffusion",
@@ -63,7 +73,7 @@ int DoIt( int argc, char * argv[], T )
   filter->SetInput( reader->GetOutput() );
   filter->UseImageSpacingOn();
   filter->SetNumberOfIterations( numberOfIterations );
-  filter->SetTimeStep( timeStep );
+  filter->SetTimeStep( timeStep * minSpacing );
   filter->SetConductanceParameter( conductance );
 
   typename CastType::Pointer cast = CastType::New();
