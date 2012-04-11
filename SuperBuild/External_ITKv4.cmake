@@ -60,7 +60,8 @@ if(NOT DEFINED ITK_DIR)
 
   set(ITKv4_REPOSITORY git://itk.org/ITK.git)
   #set(ITKv4_GIT_TAG v4.1.0)
-  set(ITKv4_GIT_TAG ae54e7089a7b12e51586519735c1d6f0af05021a) ## 2012-03-17 The v4.1.0 branch + ITKv4Registration patch set not needed by Slicer proper, but needed by extensions
+  ## 2012-04-06 The v4.2.0 master development branch, it contains the patch for Nrrd Exporting, and component based installation, but not the fresh GPU code
+  set(ITKv4_GIT_TAG 5ed6b78ca8457d45fb2c0bee44ec4051414d2de4)
 
   if(NOT DEFINED git_protocol)
     set(git_protocol "git")

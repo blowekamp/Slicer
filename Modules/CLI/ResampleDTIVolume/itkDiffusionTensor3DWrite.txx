@@ -15,6 +15,7 @@
 #define __itkDiffusionTensor3DWrite_txx
 
 #include "itkDiffusionTensor3DWrite.h"
+#include "NrrdIO.h"
 
 namespace itk
 {
