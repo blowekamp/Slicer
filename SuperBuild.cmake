@@ -328,6 +328,7 @@ ExternalProject_Add(${proj}
     # ITK
     -DITK_VERSION_MAJOR:STRING=${ITK_VERSION_MAJOR}
     -DITK_DIR:PATH=${ITK_DIR}
+    -DSimpleITK_DIR:PATH=${SimpleITK_DIR}
     # Teem
     -DTeem_DIR:PATH=${Teem_DIR}
     # VTK

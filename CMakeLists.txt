@@ -536,6 +536,12 @@ endif()
 
 include(${ITK_USE_FILE})
 
+if(Slicer_USE_SimpleITK)
+  find_package(SimpleITK REQUIRED)
+  include(${SimpleITK_USE_FILE})
+endif()
+
+
 #-----------------------------------------------------------------------------
 # VTK
 #-----------------------------------------------------------------------------

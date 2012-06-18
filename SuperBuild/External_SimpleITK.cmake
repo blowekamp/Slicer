@@ -37,6 +37,11 @@ else()
     )
 endif()
 
+
+if(NOT DEFINED git_protocol)
+  set(git_protocol "git")
+endif()
+
 configure_file(SuperBuild/SimpleITK_install_step.cmake.in
   ${CMAKE_CURRENT_BINARY_DIR}/SimpleITK_install_step.cmake
   @ONLY)
@@ -47,7 +52,7 @@ set(SimpleITK_INSTALL_COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/Si
 ExternalProject_add(SimpleITK
   SOURCE_DIR SimpleITK
   BINARY_DIR SimpleITK-build
-  GIT_REPOSITORY http://itk.org/SimpleITK.git
+  GIT_REPOSITORY ${git_protocol}://itk.org/SimpleITK.git
   # This is the tag for the "master" branch as of June 8th, 2012
   GIT_TAG f65f370185eaca75a7a95d8deb235e1b51ef5c88
   UPDATE_COMMAND ""
@@ -80,3 +85,4 @@ ExternalProject_add(SimpleITK
   DEPENDS ${SimpleITK_DEPENDENCIES}
 )
 
+set(SimpleITK_DIR "${CMAKE_BINARY_DIR}/SimpleITK-build")
