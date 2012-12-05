@@ -33,6 +33,7 @@ list(APPEND dirs
   MGHImageIO
 #  IGT
   MRML/Widgets
+  ITKFactoryRegistration
   )
 
 #-----------------------------------------------------------------------------
@@ -94,7 +95,7 @@ set(Slicer_Libs_INCLUDE_DIRS ${include_dirs} CACHE INTERNAL "Slicer Libs include
 # Anticipating the move of MRML related libraries to a standalone project,
 # let's group these libraries.
 # Note also that since MRMLIDImageIO is an ITK plugin it is NOT added to that list.
-set(_mrml_libraries MRMLCore MRMLLogic MRMLDisplayableManager)
+set(_mrml_libraries MRMLCore MRMLLogic MRMLDisplayableManager ITKFactoryRegistration)
 if(Slicer_BUILD_CLI_SUPPORT)
   list(APPEND _mrml_libraries MRMLCLI)
 endif()
