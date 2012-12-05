@@ -15,6 +15,7 @@ endif()
 #include(${KWWidgets_USE_FILE})
 
 find_package(ITK REQUIRED)
+set ( ITK_NO_IO_FACTORY_REGISTER_MANAGER 1 )
 include(${ITK_USE_FILE})
 
 if(NOT DEFINED BUILD_SHARED_LIBS)

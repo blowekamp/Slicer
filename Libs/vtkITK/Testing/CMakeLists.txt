@@ -7,6 +7,7 @@ endif(VTK_FOUND)
 
 find_package( ITK )
 if( ITK_FOUND )
+  set ( ITK_NO_IO_FACTORY_REGISTER_MANAGER 1 )
   include(${ITK_USE_FILE})
 else( ITK_FOUND )
   message( FATAL_ERROR "Cannot build without ITK" )
