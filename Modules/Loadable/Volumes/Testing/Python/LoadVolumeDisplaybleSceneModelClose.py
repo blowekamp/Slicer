@@ -2,9 +2,19 @@ import unittest
 from  __main__ import vtk, qt, ctk, slicer
 
 
+HAVE_SIMPLEITK=True
+try:
+  import SimpleITK as sitk
+  import sitkUtils
+except ImportError:
+  HAVE_SIMPLEITK=False
+
+
 class VolumesLoadSceneCloseTesting(unittest.TestCase):
   def setUp(self):
-    pass
+
+    # start with clean scene
+    slicer.mrmlScene.Clear(0)
 
   def test_LoadVolumeCloseScene(self):
     """
@@ -29,3 +39,28 @@ class VolumesLoadSceneCloseTesting(unittest.TestCase):
     # close the scene
     #
     slicer.mrmlScene.Clear(0)
+
+  if HAVE_SIMPLEITK:
+    def test_VolumeOriginPrecision(self):
+      """
+      Verify that viewing a volume with large image origin does not change the values.
+      """
+
+      origin = [547339, 218860, 20904.4]
+      print "Initial Origin:", origin
+
+      # create a small image with a large origin which was reported to be a problem
+      img = sitk.Image([10,10,10], sitk.sitkInt16)
+      img.SetOrigin(origin)
+      sitkUtils.PushToSlicer(img, "test_VolumeOriginPrecision")
+
+
+      #
+      # enter the Volumes module
+      #
+      mainWindow = slicer.util.mainWindow()
+      mainWindow.moduleSelector().selectModule('Volumes')
+
+      viewed_img = sitkUtils.PullFromSlicer("test_VolumeOriginPrecision")
+      print "Viewed Origin:", viewed_img.GetOrigin()
+      self.assertEqual(viewed_img.GetOrigin(), origin, "Origin changed after viewing")
