@@ -532,7 +532,8 @@ QWidget* qSlicerCLIModuleUIHelperPrivate::createRegionTagWidget(const ModulePara
   QString _label = QString::fromStdString(moduleParameter.GetLabel());
   QString _name = QString::fromStdString(moduleParameter.GetName());
   qMRMLNodeComboBox* widget = new qMRMLNodeComboBox;
-  widget->setNodeTypes(QStringList("vtkMRMLROIListNode"));
+  widget->setNodeTypes(QStringList("vtkMRMLAnnotationHierarchyNode"));
+  widget->addAttribute("vtkMRMLAnnotationHierarchyNode", "MainChildType", "vtkMRMLAnnotationROINode");
   //TODO - title + " RegionList"
   //TODO - tparameter->SetNewNodeEnabled(1);
   //TODO - tparameter->SetNoneEnabled(noneEnabled);

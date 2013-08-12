@@ -24,7 +24,8 @@
 #include <vtkMRMLDisplayNode.h>
 #include <vtkMRMLFiducialListNode.h>
 #include <vtkMRMLModelHierarchyNode.h>
-#include <vtkMRMLROIListNode.h>
+#include <vtkMRMLAnnotationHierarchyNode.h>
+#include <vtkMRMLAnnotationROINode.h>
 #include <vtkMRMLStorageNode.h>
 #include <vtkMRMLTransformNode.h>
 
@@ -1437,38 +1438,44 @@ void vtkSlicerCLIModuleLogic::ApplyTask(void *clientdata)
           // get the region node
           vtkMRMLNode *node
             = this->GetMRMLScene()->GetNodeByID((*pit).GetDefault().c_str());
-          vtkMRMLROIListNode *regions = vtkMRMLROIListNode::SafeDownCast(node);
+          vtkMRMLAnnotationHierarchyNode *regions = vtkMRMLAnnotationHierarchyNode::SafeDownCast(node);
 
           if (regions)
             {
             // check to see if module can handle more than one region
-            long numberOfSelectedRegions=0;
-            for (int i=0; i < regions->GetNumberOfROIs(); ++i)
-              {
-              if (regions->GetNthROISelected(i))
-                {
-                numberOfSelectedRegions++;
-                }
-              }
+            long numberOfSelectedRegions=1;
+            // for (int i=0; i < regions->GetNumberOfROIs(); ++i)
+            //   {
+            //   if (regions->GetNthROISelected(i))
+            //     {
+            //     numberOfSelectedRegions++;
+            //     }
+            //   }
 
             if (numberOfSelectedRegions == 1
                 || (*pit).GetMultiple() == "true")
               {
-              for (int i=0; i < regions->GetNumberOfROIs(); ++i)
+              for (int i=0; i < regions->GetNumberOfChildrenNodes(); ++i)
                 {
-                double *pt;
-                double *Radius;
+                double pt[3];
+                double radius[3];
                 std::ostringstream roiAsString;
 
-                if (regions->GetNthROISelected(i))
+                if (regions->GetNthChildNode(i))
                   {
-                  pt = regions->GetNthROIXYZ(i);
-                  Radius = regions->GetNthROIRadiusXYZ(i);
-                  roiAsString << pt[0] << "," << pt[1] << "," << pt[2] << ","
-                             << Radius[0] << "," << Radius[1] << "," << Radius[2];
+                  node = regions->GetNthChildNode(i)->GetAssociatedNode();
+                  vtkMRMLAnnotationROINode *roi = vtkMRMLAnnotationROINode::SafeDownCast(node);
 
-                  commandLineAsString.push_back(prefix + flag);
-                  commandLineAsString.push_back(roiAsString.str());
+                  if (roi)
+                    {
+                    roi->GetXYZ(pt);
+                    roi->GetRadiusXYZ(radius);
+                    roiAsString << pt[0] << "," << pt[1] << "," << pt[2] << ","
+                                << radius[0] << "," << radius[1] << "," << radius[2];
+
+                    commandLineAsString.push_back(prefix + flag);
+                    commandLineAsString.push_back(roiAsString.str());
+                    }
                   }
                 }
               }
