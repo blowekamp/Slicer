@@ -14,6 +14,10 @@ endif()
 find_package(VTK REQUIRED)
 include(${VTK_USE_FILE})
 
+find_package(SimpleITK REQUIRED)
+
+include(${SimpleITK_USE_FILE})
+
 if(${ITK_VERSION_MAJOR} GREATER 3)
   set(ITK_IO_MODULES_USED
     ITKIOJPEG
@@ -193,6 +197,7 @@ set(VTK_LIBRARIES vtkCommon vtkFiltering vtkImaging)
 set(libs
   ${ITK_LIBRARIES}
   ${VTK_LIBRARIES}
+  ${SimpleITK_LIBRARIES}
   )
 target_link_libraries(${lib_name} ${libs})
 
