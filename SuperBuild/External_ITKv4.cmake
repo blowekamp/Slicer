@@ -27,7 +27,13 @@ if(NOT DEFINED ITK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
   endif()
 
   set(ITKv4_REPOSITORY ${git_protocol}://itk.org/ITK.git)
-  set(ITKv4_GIT_TAG b95e6a0c835e1461b8192d5236604ed83114f5a8) # v4.5rc02 with one patch
+   # 4.5 release branch
+   # fecdd17 COMP: Update libminc to latest version.
+   # 9d6e325 BUG: Adding export specification to Exception objects
+   # d7b9a0a Merge branch 'simpleitk-related' into release
+   # 6c23e1d COMP: SimpleITK linkage failure
+   # 02468a3 BUG: Correctly re-throw exception to restore AbortEvent, ProcessAborted
+  set(ITKv4_GIT_TAG fecdd1706be83e8a7364bee298e726763dd46894 )
 
   ExternalProject_Add(${proj}
     ${${proj}_EP_ARGS}
