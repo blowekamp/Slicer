@@ -1,4 +1,5 @@
 from __main__ import vtk, qt, ctk, slicer
+import SimpleITK as sitk
 
 #
 # LabelStatistics
@@ -254,58 +255,29 @@ class LabelStatisticsLogic:
     self.labelStats = {}
     self.labelStats['Labels'] = []
 
-    stataccum = vtk.vtkImageAccumulate()
-    stataccum.SetInput(labelNode.GetImageData())
-    stataccum.Update()
-    lo = int(stataccum.GetMin()[0])
-    hi = int(stataccum.GetMax()[0])
+    labelNodeName = labelNode.GetName()
+    labelImage = sitk.ReadImage(sitkUtils.GetSlicerITKReadWriteAddress(labelNodeName))
 
-    for i in xrange(lo,hi+1):
+    grayscaleNodeName = grayscaleNode.GetName();
+    grayscaleImage = sitk.ReadImage(sitkUtils.GetSlicerITKReadWriteAddress(grayscaleNodeName))
 
-      # this->SetProgress((float)i/hi);
-      # std::string event_message = "Label "; std::stringstream s; s << i; event_message.append(s.str());
-      # this->InvokeEvent(vtkLabelStatisticsLogic::LabelStatsOuterLoop, (void*)event_message.c_str());
+    sitkStats = sitk.LabelStatisticsImageFilter()
 
-      # logic copied from slicer3 LabelStatistics
-      # to create the binary volume of the label
-      # //logic copied from slicer2 LabelStatistics MaskStat
-      # // create the binary volume of the label
-      thresholder = vtk.vtkImageThreshold()
-      thresholder.SetInput(labelNode.GetImageData())
-      thresholder.SetInValue(1)
-      thresholder.SetOutValue(0)
-      thresholder.ReplaceOutOn()
-      thresholder.ThresholdBetween(i,i)
-      thresholder.SetOutputScalarType(grayscaleNode.GetImageData().GetScalarType())
-      thresholder.Update()
+    sitkStats.Execute(grayscaleImage, labelImage)
 
-      # this.InvokeEvent(vtkLabelStatisticsLogic::LabelStatsInnerLoop, (void*)"0.25");
+    for l in sitkStats.GetValidLabels():
 
-      #  use vtk's statistics class with the binary labelmap as a stencil
-      stencil = vtk.vtkImageToImageStencil()
-      stencil.SetInput(thresholder.GetOutput())
-      stencil.ThresholdBetween(1, 1)
-
-      # this.InvokeEvent(vtkLabelStatisticsLogic::LabelStatsInnerLoop, (void*)"0.5")
-
-      stat1 = vtk.vtkImageAccumulate()
-      stat1.SetInput(grayscaleNode.GetImageData())
-      stat1.SetStencil(stencil.GetOutput())
-      stat1.Update()
-
-      # this.InvokeEvent(vtkLabelStatisticsLogic::LabelStatsInnerLoop, (void*)"0.75")
-
-      if stat1.GetVoxelCount() > 0:
         # add an entry to the LabelStats list
-        self.labelStats["Labels"].append(i)
-        self.labelStats[i,"Index"] = i
-        self.labelStats[i,"Count"] = stat1.GetVoxelCount()
-        self.labelStats[i,"Volume mm^3"] = self.labelStats[i,"Count"] * cubicMMPerVoxel
-        self.labelStats[i,"Volume cc"] = self.labelStats[i,"Volume mm^3"] * ccPerCubicMM
-        self.labelStats[i,"Min"] = stat1.GetMin()[0]
-        self.labelStats[i,"Max"] = stat1.GetMax()[0]
-        self.labelStats[i,"Mean"] = stat1.GetMean()[0]
-        self.labelStats[i,"StdDev"] = stat1.GetStandardDeviation()[0]
+        self.labelStats["Labels"].append(l)
+        self.labelStats[l,"Index"] = l
+        self.labelStats[l,"Count"] = sitkStats.GetCount(l)
+        self.labelStats[l,"Volume mm^3"] = self.labelStats[l,"Count"] * cubicMMPerVoxel
+        self.labelStats[l,"Volume cc"] = self.labelStats[l,"Volume mm^3"] * ccPerCubicMM
+        self.labelStats[l,"Min"] = sitkStats.GetMinimum(l)
+        self.labelStats[l,"Max"] = sitkStats.GetMaximum(l)
+        self.labelStats[l,"Mean"] = sitkStats.GetMean(l)
+        self.labelStats[l,"StdDev"] = sitkStats.GetSigma(l)
+        self.labelStats[l,"Sum"] = sitkStats.GetSum(l)
 
         # this.InvokeEvent(vtkLabelStatisticsLogic::LabelStatsInnerLoop, (void*)"1")
 
