@@ -26,9 +26,9 @@ if(NOT DEFINED ITK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
       set(git_protocol "git")
   endif()
 
-  set(ITKv4_REPOSITORY ${git_protocol}://github.com/Slicer/ITK.git)
-  set(ITKv4_GIT_TAG 056d97b66a1ddbae77e2217c5bd96e436c7e44fc) # slicer-v4.6.0-2014-09-19-056d97b
-
+  set(ITKv4_REPOSITORY http://review.source.kitware.com/p/ITK)
+  set(ITKv4_GIT_TAG 2d7e9c6a72522a529284fb77549efd4a0b209584) 
+  
   ExternalProject_Add(${proj}
     ${${proj}_EP_ARGS}
     GIT_REPOSITORY ${ITKv4_REPOSITORY}
@@ -45,7 +45,8 @@ if(NOT DEFINED ITK_DIR AND NOT ${CMAKE_PROJECT_NAME}_USE_SYSTEM_${proj})
       -DBUILD_TESTING:BOOL=OFF
       -DBUILD_EXAMPLES:BOOL=OFF
       -DITK_LEGACY_REMOVE:BOOL=OFF
-      -DITKV3_COMPATIBILITY:BOOL=ON
+      -DITKV3_COMPATIBILITY:BOOL=OFF
+      -DITK_USE_64BITS_IDS:BOOL=ON
       -DITK_BUILD_DEFAULT_MODULES:BOOL=ON
       -DModule_ITKReview:BOOL=ON
       -DBUILD_SHARED_LIBS:BOOL=ON

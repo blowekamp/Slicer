@@ -44,7 +44,7 @@ set(${PROJECT_NAME}_ITK_COMPONENTS
   ITKAnisotropicSmoothing
   ITKCommon
   ITKConnectedComponents
-  ITKDeprecated
+#  ITKDeprecated
   ITKDistanceMap
   ITKIOGDCM
   ITKIOGE
